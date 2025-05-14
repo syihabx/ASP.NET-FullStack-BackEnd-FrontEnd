@@ -58,15 +58,26 @@
 <body>
 
     <div class="sidebar" id="sidebar">
-        <!-- Clickable sidebar top (Logo/Product Name) -->
+        <!-- Sidebar header with logo -->
         <div class="sidebar-top" id="toggleSidebar">
-            <i class="bi bi-box icon-logo"></i>
-            <h4 class="mb-0 brand-text">INDO</h4>
+            <div class="d-flex align-items-center">
+                <i class="bi bi-box icon-logo"></i>
+                <h4 class="mb-0 brand-text">INDOTALENT</h4>
+            </div>
+            <i class="bi bi-chevron-left ms-auto sidebar-toggle-icon"></i>
         </div>
 
-        <!-- User Greeting -->
-        <div class="user-info my-3 px-3">
-            <p class="text-white">Hello, <span id="username">UserName</span>!</p>
+        <!-- User profile section -->
+        <div class="user-info">
+            <div class="d-flex align-items-center">
+                <div class="avatar-circle">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <div class="ms-2">
+                    <p class="mb-0 fw-bold" id="username">Username</p>
+                    <small class="text-muted">Administrator</small>
+                </div>
+            </div>
         </div>
 
         <!-- Menu items -->
@@ -79,15 +90,41 @@
     <div class="main-content" id="main-content">
 
         <!-- Header section -->
-        <div class="header d-flex justify-content-between align-items-center px-4">
-            <!-- Header title -->
-            <h2 class="header-title">@ViewBag.Title</h2>
+        <div class="header">
+            <div class="d-flex align-items-center">
+                <button class="btn btn-sm mobile-menu-toggle d-block d-lg-none me-3">
+                    <i class="bi bi-list fs-5"></i>
+                </button>
+                <h2 class="header-title">@ViewBag.Title</h2>
+            </div>
 
-            <!-- Logout link with open door icon -->
-            <a href="/Accounts/Logout" class="d-flex align-items-center" style="text-decoration: none; color: inherit;">
-                <i class="bi bi-door-open-fill" style="font-size: 1.25rem; color: white;"></i>
-                <span class="ms-2">Logout</span>
-            </a>
+            <div class="d-flex align-items-center">
+                <!-- Notifications button -->
+                <div class="position-relative me-3">
+                    <button class="btn btn-light btn-sm rounded-circle">
+                        <i class="bi bi-bell"></i>
+                    </button>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        2
+                    </span>
+                </div>
+
+                <!-- User dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-sm user-dropdown" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="d-none d-md-inline-block me-2" id="headerUsername">UserName</span>
+                        <div class="avatar-circle avatar-circle-sm">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                        <li><button class="dropdown-item"><i class="bi bi-person-circle me-2"></i>Profile</button></li>
+                        <li><button class="dropdown-item"><i class="bi bi-gear me-2"></i>Settings</button></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/Accounts/Logout"><i class="bi bi-door-open-fill me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <!-- Content loading indicator -->
@@ -107,18 +144,93 @@
         </div>
 
         <!-- Footer section -->
-        <footer class="border-top footer text-muted">
-            <div class="footer-content" style="width: 100%; text-align: left; padding-left: 20px;">
-                
-                &copy; @DateTime.Now.Year INDOTALENT | Active Config: <span id="activeConfig"></span> | Currency: <span id="activeCurrency"></span>
-
-                @if (Configuration.GetValue<bool>("EnableSwaggerInProduction"))
-                {
-                    <span> |</span><a href="/swagger" target="_blank" style="margin-left: 15px;">Swagger</a>
-                }
+        <footer class="footer">
+            <div class="d-flex justify-content-between align-items-center w-100">
+                <div>
+                    &copy; @DateTime.Now.Year INDOTALENT
+                </div>
+                <div class="d-flex">
+                    <span>Active Config: <span id="activeConfig"></span></span>
+                    <span class="mx-2">|</span>
+                    <span>Currency: <span id="activeCurrency"></span></span>
+                    
+                    @if (Configuration.GetValue<bool>("EnableSwaggerInProduction"))
+                    {
+                        <span class="mx-2">|</span>
+                        <a href="/swagger" target="_blank">Swagger</a>
+                    }
+                </div>
             </div>
         </footer>
     </div>
+
+    <style>
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .avatar-circle i {
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        .avatar-circle-sm {
+            width: 32px;
+            height: 32px;
+        }
+
+        .avatar-circle-sm i {
+            font-size: 1rem;
+        }
+
+        .sidebar-toggle-icon {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .sidebar.closed .sidebar-toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            background: transparent;
+            border: none;
+            color: #333;
+        }
+
+        .user-dropdown:hover {
+            background-color: #f0f4ff;
+        }
+
+        .mobile-menu-toggle {
+            background: transparent;
+            border: none;
+            color: #333;
+        }
+
+        .mobile-menu-toggle:hover {
+            background-color: #f0f4ff;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar.closed {
+                transform: translateX(-100%);
+            }
+            .sidebar {
+                transform: translateX(0);
+            }
+        }
+    </style>
+
     @await RenderSectionAsync("scripts", required: false)
 </body>
 </html>

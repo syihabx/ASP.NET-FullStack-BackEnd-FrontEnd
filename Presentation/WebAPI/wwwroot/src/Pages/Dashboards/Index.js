@@ -31,117 +31,183 @@ const app = createApp({
         const gaugeChartVendor = ref(null)
         const gaugeChartCustomer = ref(null)
 
+        // Modern color palette
+        const colorPalette = [
+            '#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6',
+            '#1abc9c', '#f1c40f', '#e67e22', '#34495e', '#16a085',
+            '#d35400', '#c0392b', '#8e44ad', '#27ae60', '#2980b9'
+        ]
 
         const drawBarChartCustomer = async () => {
             const myChart = echarts.init(barChartCustomer.value)
-
-            const colors = [
-                '#c23531',
-                '#2f4554',
-                '#61a0a8',
-                '#d48265',
-                '#91c7ae',
-                '#ca8622',
-                '#e7bcf1',
-                '#b6e0f2',
-                '#ff7f50',
-                '#f3a243',
-                '#6be6c1',
-                '#ffb980',
-                '#d14a61',
-                '#f3e3c6',
-                '#2c3e50',
-                '#95a5a6'
-            ]
 
             const seriesData = customers.value.map((customer, index) => {
                 const count = customerContacts.value.filter(contact => contact.customerName === customer).length
                 return {
                     value: count,
                     itemStyle: {
-                        color: colors[index % colors.length] 
+                        color: colorPalette[index % colorPalette.length],
+                        borderRadius: [4, 4, 0, 0]
                     }
                 }
             })
 
             const option = {
-                tooltip: {},
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#f1f1f1',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '15%',
+                    top: '5%',
+                    containLabel: true
+                },
                 xAxis: {
                     type: 'category',
                     data: customers.value,
                     axisLabel: {
                         rotate: 45, 
-                        interval: 0 
+                        interval: 0,
+                        color: '#666',
+                        fontSize: 11
+                    },
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#ddd'
+                        }
                     }
                 },
                 yAxis: {
-                    type: 'value'
+                    type: 'value',
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#eee'
+                        }
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    }
                 },
                 series: [
                     {
                         name: 'Contacts',
                         type: 'bar',
-                        data: seriesData
+                        data: seriesData,
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0,0,0,0.3)'
+                            }
+                        },
+                        barWidth: '60%'
                     }
                 ]
             }
             myChart.setOption(option)
+            window.addEventListener('resize', () => myChart.resize())
         }
+        
         const drawBarChartVendor = async () => {
             const myChart = echarts.init(barChartVendor.value)
-
-            const colors = [
-                '#c23531',
-                '#2f4554',
-                '#61a0a8',
-                '#d48265',
-                '#91c7ae',
-                '#ca8622',
-                '#e7bcf1',
-                '#b6e0f2',
-                '#ff7f50',
-                '#f3a243',
-                '#6be6c1',
-                '#ffb980',
-                '#d14a61',
-                '#f3e3c6',
-                '#2c3e50',
-                '#95a5a6'
-            ]
 
             const seriesData = vendors.value.map((vendor, index) => {
                 const count = vendorContacts.value.filter(contact => contact.vendorName === vendor).length
                 return {
                     value: count,
                     itemStyle: {
-                        color: colors[index % colors.length]
+                        color: colorPalette[index % colorPalette.length],
+                        borderRadius: [0, 4, 4, 0]
                     }
                 }
             })
 
             const option = {
-                tooltip: {},
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    },
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#f1f1f1',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    top: '3%',
+                    containLabel: true
+                },
                 xAxis: {
-                    type: 'value'
+                    type: 'value',
+                    splitLine: {
+                        lineStyle: {
+                            type: 'dashed',
+                            color: '#eee'
+                        }
+                    },
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    }
                 },
                 yAxis: {
                     type: 'category',
                     data: vendors.value,
                     axisLabel: {
-                        rotate: 45,
-                        interval: 0
+                        color: '#666',
+                        fontSize: 11
+                    },
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    axisLine: {
+                        lineStyle: {
+                            color: '#ddd'
+                        }
                     }
                 },
                 series: [
                     {
                         name: 'Contacts',
                         type: 'bar',
-                        data: seriesData
+                        data: seriesData,
+                        emphasis: {
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0,0,0,0.3)'
+                            }
+                        },
+                        barWidth: '60%'
                     }
                 ]
             }
             myChart.setOption(option)
+            window.addEventListener('resize', () => myChart.resize())
         }
+        
         const drawPieChart = async () => {
             const myChart = echarts.init(pieChart.value)
 
@@ -155,27 +221,77 @@ const app = createApp({
                 return acc
             }, {})
 
-            const pieData = Object.keys(customerContactCounts).map(customerName => {
+            const pieData = Object.keys(customerContactCounts).map((customerName, index) => {
                 return {
                     value: customerContactCounts[customerName],
-                    name: customerName
+                    name: customerName,
+                    itemStyle: {
+                        color: colorPalette[index % colorPalette.length]
+                    }
                 }
             })
 
             const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#f1f1f1',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    right: 10,
+                    top: 'center',
+                    type: 'scroll',
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#666'
+                    }
+                },
                 series: [
                     {
+                        name: 'Customer Contacts',
                         type: 'pie',
-                        center: ['50%', '50%'],
+                        radius: ['40%', '70%'],
+                        center: ['40%', '50%'],
+                        avoidLabelOverlap: true,
+                        itemStyle: {
+                            borderRadius: 4,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '12',
+                                fontWeight: 'bold'
+                            },
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
                         data: pieData
                     }
                 ]
             }
             myChart.setOption(option)
+            window.addEventListener('resize', () => myChart.resize())
         }
+        
         const drawRingChart = async () => {
             const myChart = echarts.init(ringChart.value)
-
 
             const vendorContactCounts = vendorContacts.value.reduce((acc, contact) => {
                 const vendorName = contact.vendorName
@@ -187,24 +303,75 @@ const app = createApp({
                 return acc
             }, {})
 
-            const pieData = Object.keys(vendorContactCounts).map(vendorName => {
+            const pieData = Object.keys(vendorContactCounts).map((vendorName, index) => {
                 return {
                     value: vendorContactCounts[vendorName],
-                    name: vendorName
+                    name: vendorName,
+                    itemStyle: {
+                        color: colorPalette[index % colorPalette.length]
+                    }
                 }
             })
 
             const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#f1f1f1',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 10,
+                    top: 'center',
+                    type: 'scroll',
+                    textStyle: {
+                        fontSize: 12,
+                        color: '#666'
+                    }
+                },
                 series: [
                     {
+                        name: 'Vendor Contacts',
                         type: 'pie',
-                        data: pieData,
-                        radius: ['40%', '70%']
+                        radius: ['40%', '70%'],
+                        center: ['60%', '50%'],
+                        avoidLabelOverlap: true,
+                        itemStyle: {
+                            borderRadius: 4,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: '12',
+                                fontWeight: 'bold'
+                            },
+                            itemStyle: {
+                                shadowBlur: 10,
+                                shadowOffsetX: 0,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: pieData
                     }
                 ]
             }
             myChart.setOption(option)
+            window.addEventListener('resize', () => myChart.resize())
         }
+        
         const drawGaugeChartVendor = async () => {
             const myChart = echarts.init(gaugeChartVendor.value)
 
@@ -216,18 +383,79 @@ const app = createApp({
 
             const option = {
                 tooltip: {
-                    formatter: '{a} <br/>{b}: {c}%'
+                    formatter: '{a} <br/>{b}: {c}%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#f1f1f1',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
                 },
                 series: [
                     {
-                        name: 'Performance',
+                        name: 'Contact Distribution',
                         type: 'gauge',
-                        detail: { show: false },
-                        data: [{ value: parseFloat(vendorPercentage.toFixed(2)), name: null }]
+                        radius: '85%',
+                        center: ['50%', '60%'],
+                        startAngle: 180,
+                        endAngle: 0,
+                        min: 0,
+                        max: 100,
+                        splitNumber: 10,
+                        axisLine: {
+                            lineStyle: {
+                                width: 20,
+                                color: [
+                                    [0.3, '#f39c12'],
+                                    [0.7, '#1abc9c'],
+                                    [1, '#3498db']
+                                ]
+                            }
+                        },
+                        pointer: {
+                            icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
+                            length: '60%',
+                            width: 8,
+                            offsetCenter: [0, '10%'],
+                            itemStyle: {
+                                color: '#34495e'
+                            }
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            length: 20,
+                            lineStyle: {
+                                width: 2,
+                                color: '#ddd'
+                            }
+                        },
+                        axisLabel: {
+                            distance: -30,
+                            color: '#666',
+                            fontSize: 10
+                        },
+                        title: {
+                            offsetCenter: [0, '-20%'],
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            color: '#2c3e50'
+                        },
+                        detail: {
+                            offsetCenter: [0, '40%'],
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            color: '#34495e',
+                            formatter: '{value}%',
+                            show: true
+                        },
+                        data: [{ value: parseFloat(vendorPercentage.toFixed(2)), name: 'Vendor Contacts' }]
                     }
                 ]
             }
             myChart.setOption(option)
+            window.addEventListener('resize', () => myChart.resize())
         }
 
         const drawGaugeChartCustomer = async () => {
@@ -241,20 +469,80 @@ const app = createApp({
 
             const option = {
                 tooltip: {
-                    formatter: '{a} <br/>{b}: {c}%'
+                    formatter: '{a} <br/>{b}: {c}%',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    borderColor: '#f1f1f1',
+                    borderWidth: 1,
+                    textStyle: {
+                        color: '#333'
+                    }
                 },
                 series: [
                     {
-                        name: 'Performance',
+                        name: 'Contact Distribution',
                         type: 'gauge',
-                        detail: { show: false },
-                        data: [{ value: parseFloat(customerPercentage.toFixed(2)), name: null }]
+                        radius: '85%',
+                        center: ['50%', '60%'],
+                        startAngle: 180,
+                        endAngle: 0,
+                        min: 0,
+                        max: 100,
+                        splitNumber: 10,
+                        axisLine: {
+                            lineStyle: {
+                                width: 20,
+                                color: [
+                                    [0.3, '#e74c3c'],
+                                    [0.7, '#f39c12'],
+                                    [1, '#2ecc71']
+                                ]
+                            }
+                        },
+                        pointer: {
+                            icon: 'path://M12.8,0.7l12,40.1H0.7L12.8,0.7z',
+                            length: '60%',
+                            width: 8,
+                            offsetCenter: [0, '10%'],
+                            itemStyle: {
+                                color: '#34495e'
+                            }
+                        },
+                        axisTick: {
+                            show: false
+                        },
+                        splitLine: {
+                            length: 20,
+                            lineStyle: {
+                                width: 2,
+                                color: '#ddd'
+                            }
+                        },
+                        axisLabel: {
+                            distance: -30,
+                            color: '#666',
+                            fontSize: 10
+                        },
+                        title: {
+                            offsetCenter: [0, '-20%'],
+                            fontSize: 14,
+                            fontWeight: 'bold',
+                            color: '#2c3e50'
+                        },
+                        detail: {
+                            offsetCenter: [0, '40%'],
+                            fontSize: 24,
+                            fontWeight: 'bold',
+                            color: '#34495e',
+                            formatter: '{value}%',
+                            show: true
+                        },
+                        data: [{ value: parseFloat(customerPercentage.toFixed(2)), name: 'Customer Contacts' }]
                     }
                 ]
             }
             myChart.setOption(option)
+            window.addEventListener('resize', () => myChart.resize())
         }
-
 
         onMounted(async () => {
             await checkPageAccess()

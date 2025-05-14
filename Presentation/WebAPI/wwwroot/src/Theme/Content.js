@@ -240,3 +240,270 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error('Error initializing content:', error);
     }
 });
+
+// Add event listener for sidebar toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const mainContent = document.getElementById('main-content');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    const contentLoading = document.getElementById('content-loading');
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const userMenu = document.getElementById('userMenu');
+    const username = document.getElementById('username');
+    const headerUsername = document.getElementById('headerUsername');
+    const activeConfig = document.getElementById('activeConfig');
+    const activeCurrency = document.getElementById('activeCurrency');
+
+    // User data from localStorage
+    const userName = localStorage.getItem('userName') || 'Guest User';
+    if (username) username.textContent = userName;
+    if (headerUsername) headerUsername.textContent = userName;
+
+    // Config and currency data
+    if (activeConfig) activeConfig.textContent = localStorage.getItem('activeConfig') || 'Default';
+    if (activeCurrency) activeCurrency.textContent = localStorage.getItem('activeCurrency') || 'IDR';
+
+    // Check if sidebar state is saved in localStorage
+    const sidebarState = localStorage.getItem('sidebarState');
+    if (sidebarState === 'closed') {
+        sidebar.classList.add('closed');
+        mainContent.classList.add('closed');
+    }
+
+    // Toggle sidebar on button click
+    if (toggleSidebar) {
+        toggleSidebar.addEventListener('click', function() {
+            sidebar.classList.toggle('closed');
+            mainContent.classList.toggle('closed');
+            
+            // Save sidebar state to localStorage
+            if (sidebar.classList.contains('closed')) {
+                localStorage.setItem('sidebarState', 'closed');
+            } else {
+                localStorage.setItem('sidebarState', 'open');
+            }
+        });
+    }
+
+    // Mobile menu toggle
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', function() {
+            sidebar.classList.toggle('closed');
+        });
+    }
+
+    // Loading indicator
+    window.showLoading = function() {
+        contentLoading.classList.remove('hidden');
+    };
+
+    window.hideLoading = function() {
+        contentLoading.classList.add('hidden');
+    };
+
+    // Generate menu items based on user role
+    generateMenuItems();
+
+    // Handle submenu toggles
+    setupSubmenuToggles();
+});
+
+// Function to generate menu items based on user role and access
+function generateMenuItems() {
+    const menuContainer = document.querySelector('.menu');
+    if (!menuContainer) return;
+
+    // Get user permissions from localStorage
+    const userPermissions = JSON.parse(localStorage.getItem('userPermissions')) || [];
+    const currentPath = window.location.pathname;
+
+    // Define menu structure with required permissions
+    const menuItems = [
+        {
+            name: 'Dashboard',
+            icon: 'bi bi-speedometer2',
+            path: '/Dashboards',
+            permission: 'Dashboard:Read'
+        },
+        {
+            name: 'Master Data',
+            icon: 'bi bi-database',
+            submenu: [
+                {
+                    name: 'Currencies',
+                    path: '/Currencies',
+                    permission: 'Currency:Read'
+                },
+                {
+                    name: 'Genders',
+                    path: '/Genders',
+                    permission: 'Gender:Read'
+                }
+            ]
+        },
+        {
+            name: 'Vendors',
+            icon: 'bi bi-building',
+            submenu: [
+                {
+                    name: 'Vendor Groups',
+                    path: '/VendorGroups',
+                    permission: 'VendorGroup:Read'
+                },
+                {
+                    name: 'Vendor Sub Groups',
+                    path: '/VendorSubGroups',
+                    permission: 'VendorSubGroup:Read'
+                },
+                {
+                    name: 'Vendors',
+                    path: '/Vendors',
+                    permission: 'Vendor:Read'
+                },
+                {
+                    name: 'Vendor Contacts',
+                    path: '/VendorContacts',
+                    permission: 'VendorContact:Read'
+                }
+            ]
+        },
+        {
+            name: 'Customers',
+            icon: 'bi bi-people',
+            submenu: [
+                {
+                    name: 'Customer Groups',
+                    path: '/CustomerGroups',
+                    permission: 'CustomerGroup:Read'
+                },
+                {
+                    name: 'Customer Sub Groups',
+                    path: '/CustomerSubGroups',
+                    permission: 'CustomerSubGroup:Read'
+                },
+                {
+                    name: 'Customers',
+                    path: '/Customers',
+                    permission: 'Customer:Read'
+                },
+                {
+                    name: 'Customer Contacts',
+                    path: '/CustomerContacts',
+                    permission: 'CustomerContact:Read'
+                }
+            ]
+        },
+        {
+            name: 'Accounts',
+            icon: 'bi bi-people-fill',
+            submenu: [
+                {
+                    name: 'Roles',
+                    path: '/Roles',
+                    permission: 'Role:Read'
+                },
+                {
+                    name: 'Members',
+                    path: '/Members',
+                    permission: 'Member:Read'
+                },
+                {
+                    name: 'Claims',
+                    path: '/Claims',
+                    permission: 'RoleClaim:Read'
+                }
+            ]
+        },
+        {
+            name: 'User Profile',
+            icon: 'bi bi-person-circle',
+            path: '/UserProfiles',
+            permission: 'UserProfile:Read'
+        }
+    ];
+
+    let menuHtml = '';
+
+    // Generate HTML for menu items
+    menuItems.forEach(item => {
+        // Check if user has permission for this menu item
+        let hasPermission = true;
+        if (item.permission && !userPermissions.includes(item.permission)) {
+            hasPermission = false;
+        }
+
+        // For submenu items, check if user has permission for at least one submenu
+        if (item.submenu) {
+            const hasSubPermission = item.submenu.some(subItem => 
+                !subItem.permission || userPermissions.includes(subItem.permission)
+            );
+            if (!hasSubPermission) {
+                hasPermission = false;
+            }
+        }
+
+        if (hasPermission) {
+            // Check if current menu item or any of its subitems are active
+            const isActive = item.path === currentPath || 
+                (item.submenu && item.submenu.some(sub => sub.path === currentPath));
+            
+            if (item.submenu) {
+                // Has submenu
+                const isOpen = item.submenu.some(sub => sub.path === currentPath);
+                menuHtml += `
+                    <div class="menu-group">
+                        <div class="menu-item submenu-toggle ${isActive ? 'menu-selected' : ''}">
+                            <i class="${item.icon}"></i>
+                            <span>${item.name}</span>
+                            <i class="bi bi-chevron-right caret ${isOpen ? 'rotate' : ''}"></i>
+                        </div>
+                        <div class="submenu ${isOpen ? 'open' : ''}">
+                `;
+                
+                item.submenu.forEach(subItem => {
+                    if (!subItem.permission || userPermissions.includes(subItem.permission)) {
+                        const isSubActive = subItem.path === currentPath;
+                        menuHtml += `
+                            <a href="${subItem.path}" class="menu-item ${isSubActive ? 'menu-selected' : ''}">
+                                <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+                                <span>${subItem.name}</span>
+                            </a>
+                        `;
+                    }
+                });
+                
+                menuHtml += `
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Single menu item
+                menuHtml += `
+                    <a href="${item.path}" class="menu-item ${isActive ? 'menu-selected' : ''}">
+                        <i class="${item.icon}"></i>
+                        <span>${item.name}</span>
+                    </a>
+                `;
+            }
+        }
+    });
+
+    menuContainer.innerHTML = menuHtml;
+}
+
+// Setup submenu toggle functionality
+function setupSubmenuToggles() {
+    const submenuToggles = document.querySelectorAll('.submenu-toggle');
+    
+    submenuToggles.forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            // Toggle caret icon rotation
+            const caret = this.querySelector('.caret');
+            caret.classList.toggle('rotate');
+            
+            // Toggle submenu visibility
+            const submenu = this.nextElementSibling;
+            submenu.classList.toggle('open');
+        });
+    });
+}
