@@ -9,10 +9,12 @@ import { createApp, reactive, ref, onMounted, nextTick } from 'vue'
 import { useAccessManager } from 'useAccessManager'
 import { useAxios } from 'useAxios'
 import indoloading from 'indoloading'
+import indocontentloading from 'indocontentloading'
 
 const app = createApp({
     components: {
-        indoloading
+        indoloading,
+        indocontentloading
     },
     setup() {
         const { checkPageAccess } = useAccessManager()

@@ -37,11 +37,13 @@
             "indobutton": "/src/Components/indobutton.js",
             "indoskeleton": "/src/Components/indoskeleton.js",
             "indoloading": "/src/Components/indoloading.js",
+            "indocontentloading": "/src/Components/indocontentloading.js",
             "useAxios": "/src/Composables/useAxios.js",
             "useStorageManager": "/src/Composables/useStorageManager.js",
             "useAccessManager": "/src/Composables/useAccessManager.js",
             "usePagedList": "/src/Composables/usePagedList.js",
-            "useClientSideSorting": "/src/Composables/useClientSideSorting.js"
+            "useClientSideSorting": "/src/Composables/useClientSideSorting.js",
+            "contentRouter": "/src/Theme/ContentRouter.js"
           }
         }
     </script>
@@ -88,12 +90,20 @@
             </a>
         </div>
 
-
-
+        <!-- Content loading indicator -->
+        <div id="content-loading" class="hidden">
+            <div class="d-flex flex-column align-items-center justify-content-center" style="height: 100%;">
+                <div class="spinner-border text-primary mb-2" style="width: 3rem; height: 3rem;" role="status"></div>
+                <div class="mt-2 text-primary fw-bold">Memuat konten...</div>
+            </div>
+        </div>
 
         <!-- Body section -->
         <div class="body-content">
-            @RenderBody()
+            <!-- Dynamic content area -->
+            <div id="dynamic-content">
+                @RenderBody()
+            </div>
         </div>
 
         <!-- Footer section -->
@@ -108,11 +118,6 @@
                 }
             </div>
         </footer>
-
-
-
-
-
     </div>
     @await RenderSectionAsync("scripts", required: false)
 </body>
