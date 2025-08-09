@@ -1,4 +1,4 @@
-﻿// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // Developer:      Ismail Hamzah
 // Email:         go2ismail@gmail.com
 // ----------------------------------------------------------------------------
@@ -25,72 +25,30 @@ public static class DI
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         connectionString = Check.IsNotNullOrWhiteSpace(connectionString, nameof(connectionString));
-        var databaseProvider = configuration["DatabaseProvider"];
 
-        // Register Context
-        switch (databaseProvider)
-        {
-            case "PostgreSql":
-                services.AddDbContext<DataContext>(options =>
-                    options.UseNpgsql(connectionString)
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                services.AddDbContext<CommandContext>(options =>
-                    options.UseNpgsql(connectionString)
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                services.AddDbContext<QueryContext>(options =>
-                    options.UseNpgsql(connectionString)
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                break;
-
-            case "MySql":
-                services.AddDbContext<DataContext>(options =>
-                    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                services.AddDbContext<CommandContext>(options =>
-                    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                services.AddDbContext<QueryContext>(options =>
-                    options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                break;
-
-            case "SqlServer":
-            default:
-                services.AddDbContext<DataContext>(options =>
-                    options.UseSqlServer(connectionString)
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                services.AddDbContext<CommandContext>(options =>
-                    options.UseSqlServer(connectionString)
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                services.AddDbContext<QueryContext>(options =>
-                    options.UseSqlServer(connectionString)
-                    .LogTo(Log.Information, LogLevel.Information)
-                    .EnableSensitiveDataLogging()
-                );
-                break;
-        }
+        // Register Context (MySQL only)
+        services.AddDbContext<DataContext>(options =>
+            options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
+                .LogTo(Log.Information, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+        );
+        services.AddDbContext<CommandContext>(options =>
+            options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
+                .LogTo(Log.Information, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+        );
+        services.AddDbContext<QueryContext>(options =>
+            options.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 21)))
+                .LogTo(Log.Information, LogLevel.Information)
+                .EnableSensitiveDataLogging()
+        );
 
 
         services.AddScoped<ICommandContext, CommandContext>();
         services.AddScoped<IQueryContext, QueryContext>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-        services.AddScoped(typeof(IBaseCommandRepository<>), typeof(BaseCommandRepository<>));
+        services.AddScoped(typeof(IBaseCommandRepository<>), typeof(BaseCommandRepository<>
+        ));
 
         // Register all repositories dynamically
         var repositoryAssembly = Assembly.GetExecutingAssembly();

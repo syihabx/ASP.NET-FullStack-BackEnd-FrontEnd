@@ -1,4 +1,4 @@
-﻿// Pastikan DOM telah dimuat sepenuhnya sebelum menjalankan kode
+// Pastikan DOM telah dimuat sepenuhnya sebelum menjalankan kode
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Impor router
@@ -33,37 +33,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const routes = {};
 
         // Menu data structure
-        const storedMenu = localStorage.getItem('mainNavigations');
-        let menuData = [];
-        if (storedMenu) {
-            try {
-                menuData = JSON.parse(storedMenu);
-                if (!Array.isArray(menuData)) {
-                    throw new Error('Menu data is not an array');
-                }
-            } catch (error) {
-                console.error('Error parsing menu data:', error);
-                localStorage.removeItem('mainNavigations'); // Hapus data yang rusak
-                return;
+        // Force a minimal menu with only dashboard
+        const menuData = [
+            {
+                caption: 'Main',
+                children: [
+                    { name: 'Dashboard', caption: 'Dashboard', url: '/Dashboards', isAuthorized: true }
+                ]
             }
-        } else {
-            console.log('Menu data not found in localStorage. Fetching from API...');
-            // Coba ambil menu dari API
-            try {
-                const response = await fetch('/api/Account/GetCurrentUserNavigations');
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data?.content?.data) {
-                        menuData = data.content.data;
-                        localStorage.setItem('mainNavigations', JSON.stringify(menuData));
-                    }
-                } else {
-                    console.error('Failed to fetch menu data:', response.status);
-                }
-            } catch (error) {
-                console.error('Error fetching menu data:', error);
-            }
-        }
+        ];
 
         // Bersihkan menu container sebelum diisi kembali
         menuContainer.innerHTML = '';
@@ -71,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const selectedMenu = localStorage.getItem('selected-menu');
 
         // Generate menu items
-        menuData?.forEach(parent => {
+        menuData.forEach(parent => {
             // Skip jika parent invalid
             if (!parent || !parent.caption) {
                 return;
